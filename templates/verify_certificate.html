@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}   
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <!-- <script src="{% static 'js/sweetalert.min.js' %}"></script> -->
+    <link rel="stylesheet" href="{% static 'css/sweetalert2.min.css' %}"> 
+    <title>Verify Certificate</title>
+</head>
+<body>
+    <form method="POST" id="certificateVerifyForm" style="margin-top: 50%;">
+        {% csrf_token %}
+        <h1>Certificate Verification Form</h1>
+        <div class="formcontainer">
+        <hr/>
+        <div class="container">
+            <label for="{{ form.verification_code.id_for_label }}" class="verification_code"><strong>Verification Code</strong></label><br>            
+            {{ form.verification_code }} <br>            
+        </div>
+        <button type="submit">Verify Certificate</button>
+    </form>  
+    <script>
+        // Handle form submission with AJAX
+        document.getElementById('certificateVerifyForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            // Serialize form data
+            const formData = new FormData(this);
+            // Send an AJAX POST request to the server
+            fetch('', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}', // Include the CSRF token in the request headers
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show SweetAlert on success
+                    swal({
+                        title: data.title,
+                        text: data.message,
+                        icon: "success",
+                    })                    
+                } else {
+                    // Show SweetAlert on error
+                    swal({
+                        title: data.title,
+                        text: data.message,
+                        icon: "error",
+                    });
+                }
+            })
+            .catch(error => {
+                // Show SweetAlert on error
+                swal({
+                    title: "Error",
+                    text: "An error occurred while submitting the form.",
+                    icon: "error",
+                });
+                console.error('Error:', error);
+            });
+        });
+    </script>  
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Certificate Template</title>
+    <!-- Include Bootstrap CSS -->
+    {% load static %}      
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <style>
+        /* Custom styling for the certificate */
+        body {
+            background-color: #f8f9fa;
+        }
+        .certificate {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            /* border: 5px solid #f1c40f; */
+            border-radius: 10px;
+        }
+        .certificate h2 {            
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 30px;
+            color: #f1c40f;
+        }
+        .certificate p {
+            font-size: 18px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .certificate .text-center {
+            text-align: center;
+        }
+        .certificate h3 {
+            font-size: 24px;
+            color: #333333;
+        }
+        .certificate h4 {
+            font-size: 20px;
+            color: #333333;
+        }        
+        .certificate .signature {
+            margin-top: 50px;
+            font-size: 18px;
+            color: #333333;
+        }
+        .certificate .date {
+            font-size: 18px;
+            color: #333333;
+        }
+    </style>
+</head>
+<body>
+    <div class="certificate">    
+        <h2>Certificate of Achievement</h2>
+        <p>This certificate is presented to</p>
+        <h3 class="text-center">{{certificate.name}}</h3>
+        <h4 class="text-center">{{certificate.subtitle}}</h4> 
+        <h4 class="text-center">{{certificate.custom_content}}</h4>        
+        <p class="signature">Signature: {{certificate.sign}}</p>
+        <p class="date">Date:{{certificate.date}}</p>  
+        <p class="verification-code" >
+            Verification Code: {{certificate.verification_code}}
+        </p> 
+    </div>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    {% load static %}   
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/sweetalert2.min.css' %}"> 
+    <title>Create Certificate</title>
+</head>
+<body>
+    <form method="POST" action="" id="certificateForm">
+        {% csrf_token %}
+        
+        <h1>Certificate Creation Form</h1>
+        <div class="formcontainer">
+        <hr/>
+        <div class="container">
+            <label for="{{ form.name.id_for_label }}" class="name"><strong>Name</strong></label><br>            
+            {{ form.name }} <br>
+            <label for="{{ form.subtitle.id_for_label }}" class="subtitle"><strong>Subtitle</strong></label><br>
+            {{form.subtitle }}<br>
+            <label for="{{ form.custom_content.id_for_label }}" class="custom_content"><strong>Custom Content (Optional)</strong></label><br>
+            {{form.custom_content }}<br>
+            <label for="{{ form.date.id_for_label }}" class="date"><strong>Date</strong></label><br>
+            {{ form.date }}<br>
+            <label for="{{ form.sign.id_for_label }}" class="sign"><strong>Sign</strong></label><br>
+            {{ form.sign }}<br>
+        </div>
+        <button type="submit">Create PDF Certificate</button>     
+    </form>
+    {% if form.errors %}
+    <div class="errors">
+        <strong>There were errors in the form:</strong>
+        <ul>
+            {% for field in form %}
+                {% if field.errors %}
+                    <li>{{ field.label }}:
+                        <ul>
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}   
+    <script>
+        // Handle form submission with AJAX
+        document.getElementById('certificateForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            // Serialize form data
+            const formData = new FormData(this);
+            // Send an AJAX POST request to the server
+            fetch('', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}', // Include the CSRF token in the request headers
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show SweetAlert on success
+                    swal({
+                        title: data.title,
+                        text: data.message,
+                        icon: "success",
+                    })
+                    .then(() => {
+                        const verification_code= data.verification_code;
+                        console.log("verification code",data.verification_code);
+                        // Redirect to another page after showing the success message
+                        // Redirect to the specified URL with the 'pk' parameter
+                        window.location.href = `/pdf-certificate/${verification_code}`;
+                        // window.location.href = "{% url 'pdfcertificate:pdf_certificate' pk='"+data.verification_code+"' %}";
+                    });
+                } else {
+                    // Show SweetAlert on error
+                    swal({
+                        title: "Form Validation Error",
+                        text: data.message,
+                        icon: "error",
+                    });
+                }
+            })
+            .catch(error => {
+                // Show SweetAlert on error
+                swal({
+                    title: "Error",
+                    text: "An error occurred while submitting the form.",
+                    icon: "error",
+                });
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
